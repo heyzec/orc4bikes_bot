@@ -77,7 +77,7 @@ class TeleBot:
                 chat_id=update.effective_chat.id,
                 text=START_MESSAGE)
             return False
-        if user_data.get('is_ban'):
+        if user_data['is_ban']:
             context.bot.send_message(
                 chat_id=update.effective_chat.id,
                 text=BAN_MESSAGE)
@@ -120,7 +120,7 @@ class TeleBot:
         raise FileNotFoundError
 
     def update_bike(self, bike_data) -> None:
-        bike_name = bike_data.get('name')
+        bike_name = bike_data['name']
         if not bike_name:
             return
         db.set_bike_data(bike_name, bike_data)
