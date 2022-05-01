@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from decimal import Decimal
 import json
+from lib2to3.pgen2.token import STAR
 import logging
 import os
 from os import (path, mkdir)
@@ -73,14 +74,10 @@ class TeleBot:
         """Check if user is registered, and not banned."""
         user_data = self.get_user(update, context)
         if user_data is None:
-            context.bot.send_message(
-                chat_id=update.effective_chat.id,
-                text=START_MESSAGE)
+            update.effective_chat.send_message(START_MESSAGE)
             return False
         if user_data['is_ban']:
-            context.bot.send_message(
-                chat_id=update.effective_chat.id,
-                text=BAN_MESSAGE)
+            update.effective_chat.send_message(BAN_MESSAGE)
             return False
         return True
 
@@ -167,7 +164,7 @@ class TeleBot:
         error = context.error
         logger.exception(error)
         if update is not None and update.effective_user is not None:
-            context.bot.send_message(update.effective_user.id,
+            update.effective_chat.send_message(
                 "I'm sorry, an error has occurred. The devs have been alerted!")
 
     def initialize(self):
