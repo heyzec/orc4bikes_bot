@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 from decimal import Decimal
 import json
 import logging
@@ -315,7 +315,7 @@ class AdminBot(TeleBot):
             elif command == "user":
                 text = f'@{user_data["username"]} has {user_data.get("credits", 0)} credits left.\n'
                 if user_data.get("bike_name"):
-                    time = datetime.datetime.fromisoformat(user_data["status"]).strftime("%Y/%m/%d, %H:%M:%S")
+                    time = datetime.fromisoformat(user_data["status"]).strftime("%Y/%m/%d, %H:%M:%S")
                     text += f'User has been renting {user_data["bike_name"]} since {time}'
                 else:
                     text += "User is not renting currently."
@@ -366,7 +366,7 @@ class AdminBot(TeleBot):
                         chat_id=update.effective_chat.id,
                         text=(f"Something seems wrong... The bike {bike_name} tagged to "
                               f"user @{username}, but user is not renting???"))
-                diff = self.now() - datetime.datetime.fromisoformat(status)
+                diff = self.now() - datetime.fromisoformat(status)
                 if diff.days:
                     strdiff = f"{diff.days} days, {diff.seconds//3600} hours, {(diff.seconds%3600)//60} minutes, and {diff.seconds%3600%60} seconds"
                 else:
@@ -380,7 +380,7 @@ class AdminBot(TeleBot):
 
                 # update return logs
                 bike = self.get_bike(bike_name)
-                start_time = datetime.datetime.fromisoformat(bike['status']).strftime('%Y/%m/%d, %H:%M:%S')
+                start_time = datetime.fromisoformat(bike['status']).strftime('%Y/%m/%d, %H:%M:%S')
                 end_time = self.now().strftime('%Y/%m/%d, %H:%M:%S')
                 self.update_rental_log([bike_name, username, start_time, end_time, deduction])
 
