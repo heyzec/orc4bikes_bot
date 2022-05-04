@@ -9,6 +9,18 @@ DB_SECRET_KEY = os.environ.get('DB_SECRET_KEY')
 DB_REGION_NAME = os.environ.get('DB_REGION_NAME')
 
 logger = logging.getLogger()
+    
+def keywords(k, a=""):
+    KW = {
+        'status': 's',
+        'username': 'u',
+        'bike_name': 'bn',
+        'first_name': 'fn',
+        'last_name': 'ln',
+        'log': 'l',
+    }
+    return KW[k]
+
 
 def create_users_table(dynamodb=None):
     """Creates users table if it doesn't exist"""
