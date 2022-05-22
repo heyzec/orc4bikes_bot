@@ -6,7 +6,7 @@ from functions import (
     now,
     to_readable_td,
 )
-from bots.telebot import (
+from database import (
     get_bikes,
     get_user,
     get_user_id,

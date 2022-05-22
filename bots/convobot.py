@@ -21,13 +21,15 @@ from functions import (
 )
 from bots.adminbot import admin_log
 from bots.funbot import get_random_pic
-from bots.telebot import (
+from database import (
     check_user,
     get_bike,
     get_bikes,
     get_user,
     update_bike,
     update_user,
+)
+from bots.telebot import (
     update_finance_log,
     update_rental_log,
     update_report_log,

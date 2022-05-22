@@ -8,12 +8,14 @@ from telegram.ext import (
     CommandHandler,
 )
 
-from bots.telebot import (
+from database import (
     get_bike,
     get_bikes,
     get_user,
     update_bike,
     update_user,
+)
+from bots.telebot import (
     update_finance_log,
     update_rental_log,
 )

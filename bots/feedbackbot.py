@@ -12,7 +12,7 @@ from telegram.ext import (
     MessageHandler,
 )
 
-from bots.telebot import (
+from database import (
     get_user,
     update_user,
 )

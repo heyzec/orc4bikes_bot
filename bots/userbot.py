@@ -8,7 +8,7 @@ from telegram.ext import (
     CommandHandler,
 )
 
-from bots.telebot import (
+from database import (
     check_user,
     get_bike,
     get_bikes,
