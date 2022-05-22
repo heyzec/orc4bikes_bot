@@ -1,7 +1,7 @@
 import logging
 import logging.handlers
 
-from Orc4bikesBot import Orc4bikesBot
+from Orc4bikesBot import main
 
 class ErrorDrivenHandler(logging.handlers.MemoryHandler):
     """Event driven handler, buffers INFO logs and emit only when ERROR logs occurs."""
@@ -20,7 +20,7 @@ class ErrorDrivenHandler(logging.handlers.MemoryHandler):
         if len(self.buffer) > self.capacity:
             self.buffer.pop(0)
         return False
-    
+
 def prep_logging():
     logger = logging.getLogger()
     logger.setLevel(logging.DEBUG)
@@ -45,6 +45,5 @@ def prep_logging():
 
 if __name__ == '__main__':
     logger = prep_logging()
-    newbot = Orc4bikesBot()
     logger.info("Running Orc4bikesBot now")
-    newbot.main()
+    main()
