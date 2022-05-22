@@ -14,11 +14,12 @@ from telegram.ext import (
     MessageHandler,
 )
 
-from functions import (
+from utils.functions import (
     calc_deduct,
     now,
     to_readable_td,
 )
+from utils.decorators import send_action, send_typing_action
 from bots.adminbot import admin_log
 from bots.funbot import get_random_pic
 from database import (
@@ -108,9 +109,9 @@ def routes_button(update, context):
         "\nTo start your journey, send /rent")
     return -1
 
+@send_typing_action
 def payment_command(update, context):
     """Payment: Returns available amounts to top up by."""
-    update.message.reply_chat_action(ChatAction.TYPING)
     if not check_user(update, context):
         return -1
     context.user_data.clear()
@@ -278,13 +279,13 @@ def payment_done(update, context):
     return -1
 
 
+@send_typing_action
 def rent_command(update, context):
     """Start to rent a bike.
     Impose 3 checks before rental: Registered, Renting, Credits
     Get bikes in the format of InlineKeyboardMarkup buttons
     Usage: click button to rent
     """
-    update.message.reply_chat_action(ChatAction.TYPING)
     # Impose checks on user before starting
     if not check_user(update, context):
         return -1
@@ -366,12 +367,12 @@ def rent_button(update, context):
         reply_markup=InlineKeyboardMarkup(keyboard))
     return 12
 
+@send_typing_action
 def terms_button(update, context):
     """After accepting terms, ask for photo."""
     query = update.callback_query
     query.answer()
     answer = query.data
-    query.message.reply_chat_action(ChatAction.TYPING)
 
     if answer != 'TERMS_YES':
         query.message.reply_text(
@@ -395,9 +396,9 @@ def terms_button(update, context):
     query.message.reply_html(text)
     return 13
 
+@send_action(ChatAction.UPLOAD_PHOTO)
 def rent_pic(update, context):
     """After photo is sent, save the photo and ask if would like to retake"""
-    update.message.reply_chat_action(ChatAction.UPLOAD_PHOTO)
     devskip = False
     if BOT_ENV != 'production':
         devskip = update.message.text == '/skip'
@@ -431,8 +432,8 @@ def rent_pic(update, context):
         photo=photo,
         caption=text)
 
+@send_typing_action
 def rent_done(update, context):
-    update.message.reply_chat_action(ChatAction.TYPING)
     if not context.user_data['photo'] or not context.user_data['bike_name']:
         if context.user_data.get('bike_name', None) is None:  # Unable to get bike_name, restart rental process
             update.message.reply_text(
@@ -473,9 +474,9 @@ def rent_done(update, context):
     return -1
 
 
+@send_typing_action
 def return_command(update, context):
     """Return the current bike"""
-    update.message.reply_chat_action(ChatAction.TYPING)
     if not check_user(update, context):
         return -1
     context.user_data.clear()
@@ -497,9 +498,9 @@ def return_command(update, context):
     update.message.reply_text(text, parse_mode='HTML')
     return 91
 
+@send_action(ChatAction.UPLOAD_PHOTO)
 def return_pic(update, context):
     """After photo is sent, save the photo and ask for others"""
-    update.message.reply_chat_action(ChatAction.UPLOAD_PHOTO)
     devskip = False
     if BOT_ENV != 'production':
         devskip = update.message.text == '/skip'
@@ -523,8 +524,8 @@ def return_pic(update, context):
         photo=photo,
         caption=text)
 
+@send_typing_action
 def return_done(update, context):
-    update.message.reply_chat_action(ChatAction.TYPING)
     user_data = get_user(update, context)
     status = user_data.get('status', None)
     if context.user_data['photo']:
@@ -619,9 +620,9 @@ def report_desc(update, context):
     update.message.reply_html(text)
     return 82
 
+@send_action(ChatAction.UPLOAD_PHOTO)
 def report_pic(update, context):
     """After photo is sent, save the photo and ask for others"""
-    update.message.reply_chat_action(ChatAction.UPLOAD_PHOTO)
     devskip = False
     if BOT_ENV != 'production':
         devskip = update.message.text == '/skip'

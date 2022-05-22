@@ -1,9 +1,6 @@
 from datetime import datetime
 import logging
 
-from telegram import (
-    ChatAction,
-)
 from telegram.ext import (
     CommandHandler,
 )
@@ -19,11 +16,12 @@ from bots.telebot import (
     update_finance_log,
     update_rental_log,
 )
-from functions import (
+from utils.functions import (
     calc_deduct,
     now,
     to_readable_td,
 )
+from utils.decorators import send_typing_action
 
 from admin import (
     ADMIN_GROUP_ID,
@@ -154,10 +152,10 @@ def change_credits(username, user_data, change, admin_name):
     update_finance_log(finance_log)
 
 @admin_only
+@send_typing_action
 def deduct_command(update, context):
     """Deduct specific amount from user credits"""
     keywords_check(context.args, 2)
-    update.message.reply_chat_action(ChatAction.TYPING)
     username, number = context.args
     user_data = get_and_check_user(username)
     number = to_int(number)
@@ -168,10 +166,10 @@ def deduct_command(update, context):
 
 
 @admin_only
+@send_typing_action
 def addcredit_command(update, context):
     """Topup specific amount to user credits"""
     keywords_check(context.args, 2)
-    update.message.reply_chat_action(ChatAction.TYPING)
     username, number = context.args
     user_data = get_and_check_user(username)
     number = to_int(number)
@@ -184,10 +182,10 @@ def addcredit_command(update, context):
 
 
 @admin_only
+@send_typing_action
 def setcredit_command(update, context):
     """Set user credits to specified amount."""
     keywords_check(context.args, 2)
-    update.message.reply_chat_action(ChatAction.TYPING)
     username, number = context.args
     user_data = get_and_check_user(username)
     initial_amt = user_data['credits']
@@ -201,9 +199,9 @@ def setcredit_command(update, context):
 
 
 @admin_only
+@send_typing_action
 def user_command(update, context):
     keywords_check(context.args, 1)
-    update.message.reply_chat_action(ChatAction.TYPING)
     username = context.args[0]
     user_data = get_and_check_user(username)
 
@@ -216,9 +214,9 @@ def user_command(update, context):
     update.message.reply_text(text)
 
 @admin_only
+@send_typing_action
 def setpin_command(update, context):
     keywords_check(context.args, 2)
-    update.message.reply_chat_action(ChatAction.TYPING)
     bike_name, number = context.args
     bike = get_and_check_bike(bike_name)
 
@@ -234,8 +232,8 @@ def setpin_command(update, context):
         f"Pin for {bike_name} updated to {number}!")
 
 @admin_only
+@send_typing_action
 def orcabikes_command(update, context):
-    update.message.reply_chat_action(ChatAction.TYPING)
     if len(context.args) == 0:
         bikes_data = get_bikes()
         text = '\n'.join(
@@ -287,9 +285,9 @@ def orcabikes_command(update, context):
 
 
 @admin_only
+@send_typing_action
 def setstatus_command(update, context):
     keywords_check(context.args, 1)
-    update.message.reply_chat_action(ChatAction.TYPING)
     bike_name, *status = context.args
     bike = get_and_check_bike(bike_name)
     status = ' '.join(status) if status != [] else 0
@@ -333,9 +331,9 @@ def logs_command(update, context):
 
 
 @admin_only
+@send_typing_action
 def forcereturn_command(update, context):
     keywords_check(context.args, 1)
-    update.message.reply_chat_action(ChatAction.TYPING)
     bike_name = context.args[0]
     bike = get_and_check_bike(bike_name)
 
@@ -408,10 +406,10 @@ def forcereturn_command(update, context):
 
 
 @admin_only
+@send_typing_action
 def ban_command(update, context):
     """Ban a user"""
     keywords_check(context.args, 1)
-    update.message.reply_chat_action(ChatAction.TYPING)
     username = context.args[0]
     user_data = get_and_check_user(username)
 
@@ -425,10 +423,10 @@ def ban_command(update, context):
     update.message.reply_text(f"@{username} is now BANNED.")
 
 @admin_only
+@send_typing_action
 def unban_command(update, context):
     """Unban a user"""
     keywords_check(context.args, 1)
-    update.message.reply_chat_action(ChatAction.TYPING)
     username = context.args[0]
     user_data = get_and_check_user(username)
 

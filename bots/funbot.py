@@ -10,6 +10,8 @@ from telegram.ext import (
     CommandHandler,
 )
 
+from utils.decorators import send_action, send_typing_action
+
 from bot_text import (
     CHEER_LIST,
     FUN_TEXT,
@@ -36,14 +38,6 @@ def get_pic_url(l):
             logger.exception(e)
     return None
 
-def chat_action(action):
-    def decorator(func):
-        def new_func(update, context, *args, **kwargs):
-            update.message.reply_chat_action(action)
-            return func(update, context, *args, **kwargs)
-        return new_func
-    return decorator
-
 
 def send_user(
         update, context, *,
@@ -59,7 +53,7 @@ def send_user(
         photo=pic_url,
         caption=caption)
 
-@chat_action(ChatAction.TYPING)
+@send_typing_action
 def doggo_command(update, context):
     """Shows you a few cute dogs!"""
     pic_url = get_pic_url(FUN_URLS['dog'])
@@ -69,7 +63,7 @@ def doggo_command(update, context):
         caption=random.choice(CHEER_LIST),
         error_text="Sorry, all the dogs are out playing... Please try again later!")
 
-@chat_action(ChatAction.TYPING)
+@send_typing_action
 def shibe_command(update, context):
     """Shows you a few cute shibe!"""
     pic_url = get_pic_url(FUN_URLS['shibe'])
@@ -79,7 +73,7 @@ def shibe_command(update, context):
         caption=random.choice(CHEER_LIST),
         error_text="Sorry, doge is doge... Please try again later!")
 
-@chat_action(ChatAction.TYPING)
+@send_typing_action
 def neko_command(update, context):
     """Shows you a few cute cats!"""
     pic_url = get_pic_url(FUN_URLS['neko'])
@@ -89,7 +83,7 @@ def neko_command(update, context):
         caption=random.choice(CHEER_LIST),
         error_text="Sorry, all the cats are asleep... Please try again later!")
 
-@chat_action(ChatAction.TYPING)
+@send_typing_action
 def kitty_command(update, context):
     """Shows you a few cute kittens!"""
     pic_url = get_pic_url(FUN_URLS['cat'])
@@ -99,7 +93,7 @@ def kitty_command(update, context):
         caption=random.choice(CHEER_LIST),
         error_text="Sorry, all the cats are asleep... Please try again later!")
 
-@chat_action(ChatAction.TYPING)
+@send_typing_action
 def foxy_command(update, context):
     """Shows you a few cute foxes!"""
     pic_url = get_pic_url(FUN_URLS['fox'])
@@ -109,7 +103,7 @@ def foxy_command(update, context):
         caption=random.choice(CHEER_LIST),
         error_text="Sorry, all the foxes are asleep... Please try again later!")
 
-@chat_action(ChatAction.TYPING)
+@send_typing_action
 def birb_command(update, context):
     """Shows you a few cute birbs!"""
     pic_url = get_pic_url(FUN_URLS['bird'])
@@ -122,7 +116,7 @@ def birb_command(update, context):
 def get_random_pic():
     return get_pic_url(random.choice(list(FUN_URLS.values())))
 
-@chat_action(ChatAction.TYPING)
+@send_typing_action
 def random_command(update, context):
     """Sends a random animal!"""
     pic_url = get_random_pic()
@@ -132,7 +126,7 @@ def random_command(update, context):
         caption=random.choice(CHEER_LIST),
         error_text="Hmm, I can't seem to find any animals... Maybe they're all asleep?")
 
-@chat_action(ChatAction.CHOOSE_STICKER)
+@send_action(ChatAction.CHOOSE_STICKER)
 def pika_command(update, context):
     """Sends a pikachu sticker"""
     if random.random() < 0.1:
@@ -165,14 +159,14 @@ def quote_command(update, context):
         update.message.reply_text(
             f'"{url["text"]}" - {url["author"]}')
 
-@chat_action(ChatAction.CHOOSE_STICKER)
+@send_action(ChatAction.CHOOSE_STICKER)
 def brawl_command(update, context):
     """Sends a brawl stars sticker"""
     brawls = context.bot.get_sticker_set('BrawlStarsbyHerolias')
     brawl = random.choice(brawls.stickers)
     update.message.reply_sticker(sticker=brawl)
 
-@chat_action(ChatAction.CHOOSE_STICKER)
+@send_action(ChatAction.CHOOSE_STICKER)
 def bangday_command(update, context):
     """Sends a bang don sticker"""
     bangdongs = context.bot.get_sticker_set('happybangday')

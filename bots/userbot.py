@@ -1,9 +1,6 @@
 from datetime import datetime
 import logging
 
-from telegram import (
-    ChatAction,
-)
 from telegram.ext import (
     CommandHandler,
 )
@@ -16,11 +13,12 @@ from database import (
     update_user,
     update_user_id,
 )
-from functions import (
+from utils.functions import (
     calc_deduct,
     now,
     to_readable_td,
 )
+from utils.decorators import send_typing_action
 
 from admin import (
     ADMIN_LIST,
@@ -94,9 +92,9 @@ def guide_command(update, context):
         photo=GUIDE_PIC,
         caption="Here's the guide! Do you want to /rent?")
 
+@send_typing_action
 def history_command(update, context):
     """Shows past 10 transaction history"""
-    update.message.reply_chat_action(ChatAction.TYPING)
     if not check_user(update, context):
         return -1
     user_data = get_user(update, context)
@@ -126,9 +124,9 @@ def history_command(update, context):
             )
     update.message.reply_text(text)
 
+@send_typing_action
 def bikes_command(update, context):
     """Show all available bikes. Used in /rent"""
-    update.message.reply_chat_action(ChatAction.TYPING)
     bikes_data = get_bikes()
     avail, not_avail = [], []
     for bike in bikes_data:
@@ -144,9 +142,9 @@ def bikes_command(update, context):
 
     update.message.reply_html(text)
 
+@send_typing_action
 def status_command(update, context):
     """Check the user rental status and current credits"""
-    update.message.reply_chat_action(ChatAction.TYPING)
     if not check_user(update, context):
         return -1
     user_data = get_user(update, context)
@@ -174,11 +172,11 @@ def status_command(update, context):
     status_text += "\nTo start your journey, send /rent."
     update.message.reply_text(status_text)
 
+@send_typing_action
 def getpin_command(update, context):
     """Gets pin of current renting bike.
     Not available if not renting
     """
-    update.message.reply_chat_action(ChatAction.TYPING)
     if not check_user(update, context):
         return -1
     user_data = get_user(update, context)

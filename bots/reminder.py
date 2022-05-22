@@ -1,7 +1,7 @@
 from datetime import datetime
 import logging
 
-from functions import (
+from utils.functions import (
     calc_deduct,
     now,
     to_readable_td,
