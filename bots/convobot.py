@@ -16,10 +16,13 @@ from telegram.ext import (
 
 from utils.functions import (
     calc_deduct,
-    now,
-    to_readable_td,
 )
 from utils.decorators import send_action, send_typing_action
+from utils.time import (
+    now,
+    now_formatted,
+    to_readable_td,
+)
 from bots.adminbot import admin_log
 from bots.funbot import get_random_pic
 from database import (
@@ -53,11 +56,17 @@ from admin import (
     ADMIN_TREASURER_NAME,
     ADMIN_TREASURER_URL,
 )
-from bot_text import (
+from text.bot_text import (
+    FINANCE_PAYMENT_TEMPLATE,
+    RENTAL_RENT_TEMPLATE,
+    RENTAL_RETURN_TEMPLATE,
+    REPORT_TEMPLATE,
+    TERMS_TEXT,
+)
+from text.others import (
     EMOJI,
     ROUTES_LIST,
     ROUTES_PICS,
-    TERMS_TEXT,
 )
 
 
@@ -252,7 +261,7 @@ def payment_done(update, context):
     user_data['finance'] = user_data.get('finance', [])
     f_log = {
         'type': 'payment',
-        'time': now().strftime("%Y/%m/%d, %H:%M:%S"),
+        'time': now_formatted(),
         'initial': initial_amount,
         'change': user_data['credits'] - initial_amount,
         'final': user_data['credits'],
@@ -261,16 +270,17 @@ def payment_done(update, context):
     update_user(user_data)
 
     # Notify Admin group
-    message = (
-        f"[FINANCE - PAYMENT]\n@{user_data['username']} paid ${amount/100:.2f} at "
-        f"{now().strftime('%Y/%m/%d, %H:%M:%S')}"
-    )
+    message = FINANCE_PAYMENT_TEMPLATE.format(**{
+        'username': user_data['username'],
+        'amt': f"{amount/100:.2f}",
+        'time': now_formatted(),
+    })
     admin_log(update, context, message, photo)
 
     # Update finance log
     finance_log = [
         user_data['username'],
-        now().strftime("%Y/%m/%d, %H:%M:%S"),
+        now_formatted(),
         initial_amount, user_data['credits']-initial_amount, user_data['credits'],
         'orc4bikes_bot'
     ]
@@ -462,14 +472,15 @@ def rent_done(update, context):
 
     # Notify user
     update.message.reply_text(
-        f"Rental started! Time of rental, {now().strftime('%Y/%m/%d, %H:%M:%S')}"
+        f"Rental started! Time of rental, {now_formatted()}"
         "\nUse /getpin to unlock bike.")
 
     # Notify Admin group
-    message = (
-        f"[RENTAL - RENT]"
-        f"\n@{user_data['username']} rented {bike_name} at {now().strftime('%Y/%m/%d, %H:%M:%S')}"
-    )
+    message = RENTAL_RENT_TEMPLATE.format(**{
+        'username': user_data['username'],
+        'bike_name': bike_name,
+        'time': now_formatted(),
+    })
     admin_log(update, context, message, context.user_data['photo'])
     return -1
 
@@ -544,7 +555,7 @@ def return_done(update, context):
         bike_name = user_data['bike_name']
         bike_data = get_bike(bike_name)
         start_time = datetime.fromisoformat(bike_data['status']).strftime('%Y/%m/%d, %H:%M:%S')
-        end_time = now().strftime('%Y/%m/%d, %H:%M:%S')
+        end_time = now_formatted()
         update_rental_log([bike_name, username, start_time, end_time, deduction])
 
         # Update bike first, because bike uses user_data.bike_name
@@ -557,7 +568,7 @@ def return_done(update, context):
         log.append(d)
         f_log = {
             'type': 'rental',
-            'time': now().strftime("%Y/%m/%d, %H:%M:%S"),
+            'time': now_formatted(),
             'credits': user_data['credits'],
             'spent': deduction,
             'remaining': user_data['credits'] - deduction
@@ -580,12 +591,13 @@ def return_done(update, context):
         update.message.reply_text(user_text)
         # Notify Admin group
 
-        admin_text = (
-            "[RENTAL - RETURN]"
-            f"\n@{update.message.from_user.username} returned {bike_name} at following time:"
-            f"\n{now().strftime('%Y/%m/%d, %H:%M:%S')}"
-            f"\n{deduction_text}"
-        )
+
+        admin_text = RENTAL_RETURN_TEMPLATE.format(**{
+            'username': update.message.from_user.username,
+            'bike_name': bike_name,
+            'time': now_formatted(),
+        })
+        admin_text += f"\n{deduction_text}"
 
         admin_log(update, context, admin_text, context.user_data['photo'])
         context.user_data.clear()
@@ -680,14 +692,18 @@ def report_done(update, context):
             "\nTo see available bikes, send /bikes"
         )
         update.message.reply_text(text)
+
         # Update admin group
-        admin_username = update.message.from_user.username
-        admin_text = f"[REPORT]\n@{admin_username} sent the following report:\n{context.user_data['desc']}"
+        username = update.message.from_user.username
+        admin_text = REPORT_TEMPLATE.format(**{
+            'username': username,
+            'desc': context.user_data['desc'],
+        })
         admin_log(update, context, admin_text, context.user_data['photo'])
 
         # Update report logs
-        curr_time = now().strftime('%Y/%m/%d, %H:%M:%S')
-        update_report_log([admin_username, curr_time, context.user_data['desc']])
+        curr_time = now_formatted()
+        update_report_log([username, curr_time, context.user_data['desc']])
         context.user_data.clear()
         return -1
     else:

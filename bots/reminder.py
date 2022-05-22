@@ -3,6 +3,8 @@ import logging
 
 from utils.functions import (
     calc_deduct,
+)
+from utils.time import (
     now,
     to_readable_td,
 )

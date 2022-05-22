@@ -16,7 +16,9 @@ from database import (
     get_user,
     update_user,
 )
-from utils.functions import now
+from utils.time import (
+    now,
+)
 
 from admin import (
     LOGGING_URL,

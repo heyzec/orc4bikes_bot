@@ -3,7 +3,7 @@ import database.controller as db
 from admin import (
     ADMIN_HEAD,
 )
-from bot_text import (
+from text.bot_text import (
     BAN_MESSAGE,
     START_MESSAGE,
 )

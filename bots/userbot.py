@@ -15,6 +15,8 @@ from database import (
 )
 from utils.functions import (
     calc_deduct,
+)
+from utils.time import (
     now,
     to_readable_td,
 )
@@ -25,10 +27,10 @@ from admin import (
     BOT_ENV,
 )
 
-from bot_text import (
+from text.bot_text import HELP_TEXT
+from text.others import (
     EMOJI,
     GUIDE_PIC,
-    HELP_TEXT,
 )
 
 

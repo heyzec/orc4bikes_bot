@@ -12,9 +12,9 @@ from telegram.ext import (
 
 from utils.decorators import send_action, send_typing_action
 
-from bot_text import (
+from text.bot_text import FUN_TEXT
+from text.others import (
     CHEER_LIST,
-    FUN_TEXT,
     FUN_URLS,
     OHNO_LIST,
     OHYES_LIST,

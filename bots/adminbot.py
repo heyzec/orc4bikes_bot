@@ -18,7 +18,10 @@ from bots.telebot import (
 )
 from utils.functions import (
     calc_deduct,
+)
+from utils.time import (
     now,
+    now_formatted,
     to_readable_td,
 )
 from utils.decorators import send_typing_action
@@ -28,10 +31,11 @@ from admin import (
     ADMIN_LIST,
     ADMIN_DEV,
 )
-from bot_text import (
+from text.bot_text import (
     ADMIN_TEXT,
-    EMOJI,
+    RENTAL_RETURN_TEMPLATE,
 )
+from text.others import EMOJI
 
 logger = logging.getLogger()
 
@@ -135,7 +139,7 @@ def change_credits(username, user_data, change, admin_name):
     user_data['finance'] = user_data.get('finance',[])
     f_log = {
         'type': 'admin',
-        'time': now().strftime("%Y/%m/%d, %H:%M:%S"),
+        'time': now_formatted(),
         'initial': initial_amt,
         'change': change,
         'final': final_amt
@@ -145,7 +149,7 @@ def change_credits(username, user_data, change, admin_name):
 
     finance_log = [
         username,
-        now().strftime("%Y/%m/%d, %H:%M:%S"),
+        now_formatted(),
         initial_amt, change, final_amt,
         admin_name
     ]
@@ -360,7 +364,7 @@ def forcereturn_command(update, context):
     # update return logs
     bike = get_bike(bike_name)
     start_time = datetime.fromisoformat(bike['status']).strftime('%Y/%m/%d, %H:%M:%S')
-    end_time = now().strftime('%Y/%m/%d, %H:%M:%S')
+    end_time = now_formatted()
     update_rental_log([bike_name, username, start_time, end_time, deduction])
 
     # update bike first, because bike uses user_data.bike_name
@@ -373,7 +377,7 @@ def forcereturn_command(update, context):
     log.append(d)
     f_log = {
         'type': 'rental',
-        'time': now().strftime("%Y/%m/%d, %H:%M:%S"),
+        'time': now_formatted(),
         'credits': user_data['credits'],
         'spent': deduction,
         'remaining': user_data['credits'] - deduction
@@ -395,13 +399,14 @@ def forcereturn_command(update, context):
     context.bot.send_message(
         chat_id=int(user_data['chat_id']),
         text=user_text)
+
     # Notify Admin group
-    admin_text = (
-        "[RENTAL - RETURN]"
-        f"\n@{update.message.from_user.username} returned {bike_name} at following time:"
-        f"\n{now().strftime('%Y/%m/%d, %H:%M:%S')}"
-        f"\nThis return was force-returned by @{admin_username}.\n{deduction_text}"
-    )
+    admin_text = RENTAL_RETURN_TEMPLATE.format(**{
+        'username': update.message.from_user.username,
+        'bike_name': bike_name,
+        'time': now_formatted(),
+    })
+    admin_text += f"\nThis return was force-returned by @{admin_username}.\n{deduction_text}"
     admin_log(update, context, admin_text)
 
 
